@@ -1,8 +1,14 @@
 [servers]
-Jenkins_Master    ansible_host=
-Jenkins_Slave     ansible_host=
-Production_Server ansible_host=
+Jenkins_Master    ansible_host=35.157.219.111	ansible_ssh_private_key=/home/junops/.ssh/jenkins_host
+Jenkins_Slave     ansible_host=35.158.247.248	ansible_ssh_private_key=/home/junops/.ssh/jenkins_slave
+Production_Server ansible_host=52.57.93.85	ansible_ssh_private_key=/home/junops/.ssh/prod
+
+[jenkins]
+Jenkins_Master
+Jenkins_Slave
 
 [servers:vars]
-ansible_user=root
-ansible_password=77435
+ansible_user=ubuntu
+
+[jenkins:vars]
+ansible_user=ubuntu
