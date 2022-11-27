@@ -1,0 +1,8 @@
+[servers]
+Jenkins_Master    ansible_host=
+Jenkins_Slave     ansible_host=
+Production_Server ansible_host=
+
+[servers:vars]
+ansible_user=root
+ansible_password=77435
