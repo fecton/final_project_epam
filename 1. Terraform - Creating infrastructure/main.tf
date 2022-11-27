@@ -9,7 +9,7 @@ provider "aws" {}
 # Public keys
 # ============================================================================
     locals {
-        JenkinsHost_pub  = file("~/.ssh/jenkins_host.pub")
+        JenkinsMaster_pub  = file("~/.ssh/jenkins_host.pub")
         JenkinsSlave_pub = file("~/.ssh/jenkins_slave.pub")
         Production_pub   = file("~/.ssh/prod.pub")
     }
@@ -20,16 +20,16 @@ provider "aws" {}
 # AWS INSTANCES
 # ============================================================================
 
-    # Creating a Jenkins HOST server for testing, deploying and sending to Jenkins SLAVE
-    resource "aws_instance" "Jenkins_HOST" {
+    # Creating a Jenkins MASTER server for testing, deploying and sending to Jenkins SLAVE
+    resource "aws_instance" "Jenkins_MASTER" {
         ami                     = var.DefaultInstanceAMI
         instance_type           = var.DefaultInstanceType
         vpc_security_group_ids  = [aws_security_group.sg-basicConnection.id]
-        user_data               = file("./JenkinsStartUp.sh")
-        key_name                = "jenkins-host-key"
+        # user_data               = file("./JenkinsStartUp.sh")
+        key_name                = "jenkins-master-key"
 
         tags = {
-            Name        = "Jenkins host server"
+            Name        = "Jenkins Master server"
             Author      = var.Author
             Project     = var.ProjectName
             Jenkins     = "HOST"
@@ -42,11 +42,11 @@ provider "aws" {}
         ami                     = var.DefaultInstanceAMI
         instance_type           = var.DefaultInstanceType
         vpc_security_group_ids  = [aws_security_group.sg-basicConnection.id]
-        user_data               = file("./JenkinsStartUp.sh")
+        # user_data               = file("./JenkinsStartUp.sh")
         key_name                = "jenkins-slave-key"
 
         tags = {
-            Name        = "Jenkins slave server"
+            Name        = "Jenkins Slave server"
             Author      = var.Author
             Project     = var.ProjectName
             Jenkins     = "HOST"
@@ -56,7 +56,7 @@ provider "aws" {}
     }
 
 # Creating a production (target) server
-    resource "aws_instance" "PROD_SERVER" {
+    resource "aws_instance" "Production_server" {
         ami                     = var.DefaultInstanceAMI
         instance_type           = var.DefaultInstanceType
         vpc_security_group_ids  = [aws_security_group.sg-basicConnection.id]
@@ -84,9 +84,9 @@ provider "aws" {}
 
 # AWS KEY PAIR
 # ============================================================================
-    resource "aws_key_pair" "Jenkins_Host" {
-        key_name    = "jenkins-host-key"
-        public_key  = local.JenkinsHost_pub
+    resource "aws_key_pair" "Jenkins_Master" {
+        key_name    = "jenkins-master-key"
+        public_key  = local.JenkinsMaster_pub
     }
 
     resource "aws_key_pair" "Jenkins_Slave" {
@@ -133,14 +133,14 @@ provider "aws" {}
 # ============================================================================
 
     # Jenkins HOST
-    output "Jenkins-Host-STATE" {
-        value = aws_instance.Jenkins_HOST.instance_state
+    output "Jenkins-Master-STATE" {
+        value = aws_instance.Jenkins_MASTER.instance_state
     }
-    output "Jenkins-Host-IP" {
-        value = aws_instance.Jenkins_HOST.public_ip
+    output "Jenkins-Master-IP" {
+        value = aws_instance.Jenkins_MASTER.public_ip
     }
-    output "Jenkins-Host-SECURITY-GROUPS" {
-        value = aws_instance.Jenkins_HOST.security_groups
+    output "Jenkins-Master-SECURITY-GROUPS" {
+        value = aws_instance.Jenkins_MASTER.security_groups
     }
 
     # Jenkins SLAVE
@@ -158,13 +158,13 @@ provider "aws" {}
 
     # Production Server
     output "Production-Server-STATE" {
-        value = aws_instance.PROD_SERVER.instance_state
+        value = aws_instance.Production_server.instance_state
     }
     output "Production-Server-IP" {
-        value = aws_instance.PROD_SERVER.public_ip
+        value = aws_instance.Production_server.public_ip
     }
     output "Production-Server-SECURITY-GROUPS" {
-        value = aws_instance.PROD_SERVER.security_groups
+        value = aws_instance.Production_server.security_groups
     }
 
 # ============================================================================
